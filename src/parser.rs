@@ -53,10 +53,10 @@ where
     }
 }
 
-impl<P1, P2, R> Parser for (P1, P2)
+impl<P1, P2, R1, R2> Parser for (P1, P2)
 where
-    P1: Parser<R = R>,
-    P2: Parser<R = R>,
+    P1: Parser<R = R1>,
+    P2: Parser<R = R2>,
 {
     type R = (P1::R, P2::R);
     fn parse(s: &str) -> Option<((P1::R, P2::R), &str)> {
@@ -66,34 +66,34 @@ where
         Some(((item1, item2), remain))
     }
 }
-impl<P1, P2, P3, R> Parser for (P1, P2, P3)
+impl<P1, P2, P3, R1, R2, R3> Parser for (P1, P2, P3)
 where
-    P1: Parser<R = R>,
-    P2: Parser<R = R>,
-    P3: Parser<R = R>,
+    P1: Parser<R = R1>,
+    P2: Parser<R = R2>,
+    P3: Parser<R = R3>,
 {
     type R = (P1::R, P2::R, P3::R);
     fn parse(s: &str) -> Option<((P1::R, P2::R, P3::R), &str)> {
         let (item1, remain) = P1::parse(s)?;
         let (item2, remain) = P2::parse(remain)?;
-        let (item3, remain) = P2::parse(remain)?;
+        let (item3, remain) = P3::parse(remain)?;
 
         Some(((item1, item2, item3), remain))
     }
 }
-impl<P1, P2, P3, P4, R> Parser for (P1, P2, P3, P4)
+impl<P1, P2, P3, P4, R1, R2, R3, R4> Parser for (P1, P2, P3, P4)
 where
-    P1: Parser<R = R>,
-    P2: Parser<R = R>,
-    P3: Parser<R = R>,
-    P4: Parser<R = R>,
+    P1: Parser<R = R1>,
+    P2: Parser<R = R2>,
+    P3: Parser<R = R3>,
+    P4: Parser<R = R4>,
 {
     type R = (P1::R, P2::R, P3::R, P4::R);
     fn parse(s: &str) -> Option<((P1::R, P2::R, P3::R, P4::R), &str)> {
         let (item1, remain) = P1::parse(s)?;
         let (item2, remain) = P2::parse(remain)?;
-        let (item3, remain) = P2::parse(remain)?;
-        let (item4, remain) = P2::parse(remain)?;
+        let (item3, remain) = P3::parse(remain)?;
+        let (item4, remain) = P4::parse(remain)?;
 
         Some(((item1, item2, item3, item4), remain))
     }
