@@ -102,10 +102,10 @@ where
 pub struct Join<P, R> {
     _marker: std::marker::PhantomData<(P, R)>,
 }
-impl<P, PR, R, ITEM> Parser for Join<P, R>
+impl<P, R> Parser for Join<P, R>
 where
-    P: Parser<R = PR>,
-    PR: IntoIterator<Item = ITEM>,
+    P: Parser,
+    P::R: IntoIterator,
     R: FromIterator<<P::R as IntoIterator>::Item>,
 {
     type R = R;
