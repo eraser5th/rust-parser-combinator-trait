@@ -99,7 +99,7 @@ where
     }
 }
 
-struct Join<P, R> {
+pub struct Join<P, R> {
     _marker: std::marker::PhantomData<(P, R)>,
 }
 impl<P, PR, R, ITEM> Parser for Join<P, R>
