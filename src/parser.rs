@@ -59,7 +59,7 @@ where
     P2: Parser<R = R2>,
 {
     type R = (P1::R, P2::R);
-    fn parse(s: &str) -> Option<((P1::R, P2::R), &str)> {
+    fn parse(s: &str) -> Option<(Self::R, &str)> {
         let (item1, remain) = P1::parse(s)?;
         let (item2, remain) = P2::parse(remain)?;
 
@@ -73,7 +73,7 @@ where
     P3: Parser<R = R3>,
 {
     type R = (P1::R, P2::R, P3::R);
-    fn parse(s: &str) -> Option<((P1::R, P2::R, P3::R), &str)> {
+    fn parse(s: &str) -> Option<(Self::R, &str)> {
         let (item1, remain) = P1::parse(s)?;
         let (item2, remain) = P2::parse(remain)?;
         let (item3, remain) = P3::parse(remain)?;
@@ -89,13 +89,29 @@ where
     P4: Parser<R = R4>,
 {
     type R = (P1::R, P2::R, P3::R, P4::R);
-    fn parse(s: &str) -> Option<((P1::R, P2::R, P3::R, P4::R), &str)> {
+    fn parse(s: &str) -> Option<(Self::R, &str)> {
         let (item1, remain) = P1::parse(s)?;
         let (item2, remain) = P2::parse(remain)?;
         let (item3, remain) = P3::parse(remain)?;
         let (item4, remain) = P4::parse(remain)?;
 
         Some(((item1, item2, item3, item4), remain))
+    }
+}
+
+struct Join<P, R> {
+    _marker: std::marker::PhantomData<(P, R)>,
+}
+impl<P, PR, R, ITEM> Parser for Join<P, R>
+where
+    P: Parser<R = PR>,
+    PR: IntoIterator<Item = ITEM>,
+    R: FromIterator<<P::R as IntoIterator>::Item>,
+{
+    type R = R;
+    fn parse(s: &str) -> Option<(Self::R, &str)> {
+        let (items, remain) = P::parse(s)?;
+        Some((items.into_iter().collect(), remain))
     }
 }
 
