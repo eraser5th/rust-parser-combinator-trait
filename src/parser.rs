@@ -1,10 +1,10 @@
-pub trait Parser {
+pub trait Parser<'a> {
     type R;
     fn parse(s: &str) -> Option<(Self::R, &str)>;
 }
 
 pub struct Item;
-impl Parser for Item {
+impl<'a> Parser<'a> for Item {
     type R = char;
     fn parse(s: &str) -> Option<(Self::R, &str)> {
         let mut chars = s.chars();
@@ -15,9 +15,9 @@ impl Parser for Item {
 pub struct Repeat0<P> {
     _marker: std::marker::PhantomData<P>,
 }
-impl<P, R> Parser for Repeat0<P>
+impl<'a, P, R> Parser<'a> for Repeat0<P>
 where
-    P: Parser<R = R>,
+    P: Parser<'a, R = R>,
     R: Clone,
 {
     type R = Vec<R>;
@@ -35,9 +35,9 @@ where
 pub struct Repeat1<P> {
     _marker: std::marker::PhantomData<P>,
 }
-impl<P, R> Parser for Repeat1<P>
+impl<'a, P, R> Parser<'a> for Repeat1<P>
 where
-    P: Parser<R = R>,
+    P: Parser<'a, R = R>,
     R: Clone,
 {
     type R = Vec<R>;
@@ -53,10 +53,10 @@ where
     }
 }
 
-impl<P1, P2, R1, R2> Parser for (P1, P2)
+impl<'a, P1, P2, R1, R2> Parser<'a> for (P1, P2)
 where
-    P1: Parser<R = R1>,
-    P2: Parser<R = R2>,
+    P1: Parser<'a, R = R1>,
+    P2: Parser<'a, R = R2>,
 {
     type R = (P1::R, P2::R);
     fn parse(s: &str) -> Option<(Self::R, &str)> {
@@ -66,11 +66,11 @@ where
         Some(((item1, item2), remain))
     }
 }
-impl<P1, P2, P3, R1, R2, R3> Parser for (P1, P2, P3)
+impl<'a, P1, P2, P3, R1, R2, R3> Parser<'a> for (P1, P2, P3)
 where
-    P1: Parser<R = R1>,
-    P2: Parser<R = R2>,
-    P3: Parser<R = R3>,
+    P1: Parser<'a, R = R1>,
+    P2: Parser<'a, R = R2>,
+    P3: Parser<'a, R = R3>,
 {
     type R = (P1::R, P2::R, P3::R);
     fn parse(s: &str) -> Option<(Self::R, &str)> {
@@ -81,12 +81,12 @@ where
         Some(((item1, item2, item3), remain))
     }
 }
-impl<P1, P2, P3, P4, R1, R2, R3, R4> Parser for (P1, P2, P3, P4)
+impl<'a, P1, P2, P3, P4, R1, R2, R3, R4> Parser<'a> for (P1, P2, P3, P4)
 where
-    P1: Parser<R = R1>,
-    P2: Parser<R = R2>,
-    P3: Parser<R = R3>,
-    P4: Parser<R = R4>,
+    P1: Parser<'a, R = R1>,
+    P2: Parser<'a, R = R2>,
+    P3: Parser<'a, R = R3>,
+    P4: Parser<'a, R = R4>,
 {
     type R = (P1::R, P2::R, P3::R, P4::R);
     fn parse(s: &str) -> Option<(Self::R, &str)> {
@@ -98,20 +98,17 @@ where
         Some(((item1, item2, item3, item4), remain))
     }
 }
-
-pub struct Join<P, R> {
-    _marker: std::marker::PhantomData<(P, R)>,
+pub struct ToStr<P> {
+    _marker: std::marker::PhantomData<P>,
 }
-impl<P, R> Parser for Join<P, R>
+impl<'a, P> Parser<'a> for ToStr<P>
 where
-    P: Parser,
-    P::R: IntoIterator,
-    R: FromIterator<<P::R as IntoIterator>::Item>,
+    P: Parser<'a, R = Vec<char>>,
 {
-    type R = R;
+    type R = &'a str;
     fn parse(s: &str) -> Option<(Self::R, &str)> {
-        let (items, remain) = P::parse(s)?;
-        Some((items.into_iter().collect(), remain))
+        let (item, remain) = P::parse(s)?;
+        Some((item.iter().collect::<String>().as_str(), remain))
     }
 }
 
