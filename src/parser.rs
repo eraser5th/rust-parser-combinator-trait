@@ -98,19 +98,6 @@ where
         Some(((item1, item2, item3, item4), remain))
     }
 }
-pub struct ToStr<P> {
-    _marker: std::marker::PhantomData<P>,
-}
-impl<'a, P> Parser<'a> for ToStr<P>
-where
-    P: Parser<'a, R = Vec<char>>,
-{
-    type R = &'a str;
-    fn parse(s: &str) -> Option<(Self::R, &str)> {
-        let (item, remain) = P::parse(s)?;
-        Some((item.iter().collect::<String>().as_str(), remain))
-    }
-}
 
 #[cfg(test)]
 mod test_item_parse {

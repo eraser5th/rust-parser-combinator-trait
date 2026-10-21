@@ -5,9 +5,9 @@ pub struct Filter<I, P> {
     _marker: std::marker::PhantomData<(I, P)>,
 }
 
-impl<I, P, R> Parser for Filter<I, P>
+impl<'a, I, P, R> Parser<'a> for Filter<I, P>
 where
-    I: Parser<R = R>,
+    I: Parser<'a, R = R>,
     P: Predict<R>,
     R: Clone,
 {
