@@ -21,6 +21,12 @@ where
 }
 
 pub struct ToString;
+impl FromParserResult<Vec<char>> for ToString {
+    type Output = String;
+    fn convert(r: Vec<char>) -> Self::Output {
+        r.into_iter().collect()
+    }
+}
 impl FromParserResult<char> for ToString {
     type Output = String;
     fn convert(r: char) -> Self::Output {
@@ -55,6 +61,15 @@ mod test {
         let result = Parser::parse(input);
 
         assert_eq!(result, Some(("a".to_string(), "123")));
+    }
+
+    fn test_map_to_string_vec() {
+        type Parser = Map<crate::parser::Repeat1<Item>, ToString>;
+        let input = "abc123";
+
+        let result = Parser::parse(input);
+
+        assert_eq!(result, Some(("abc".to_string(), "123")));
     }
 
     #[test]
