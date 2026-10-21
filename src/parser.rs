@@ -3,6 +3,7 @@ pub trait Parser<'a> {
     fn parse(s: &str) -> Option<(Self::R, &str)>;
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Item;
 impl<'a> Parser<'a> for Item {
     type R = char;
@@ -12,6 +13,7 @@ impl<'a> Parser<'a> for Item {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Repeat0<P>(std::marker::PhantomData<P>);
 impl<'a, P, R> Parser<'a> for Repeat0<P>
 where
@@ -30,6 +32,7 @@ where
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Repeat1<P>(std::marker::PhantomData<P>);
 impl<'a, P, R> Parser<'a> for Repeat1<P>
 where
@@ -49,6 +52,7 @@ where
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Optional<P>(std::marker::PhantomData<P>);
 impl<'a, P: Parser<'a>> Parser<'a> for Optional<P> {
     type R = Option<P::R>;
