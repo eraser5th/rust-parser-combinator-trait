@@ -12,9 +12,7 @@ impl<'a> Parser<'a> for Item {
     }
 }
 
-pub struct Repeat0<P> {
-    _marker: std::marker::PhantomData<P>,
-}
+pub struct Repeat0<P>(std::marker::PhantomData<P>);
 impl<'a, P, R> Parser<'a> for Repeat0<P>
 where
     P: Parser<'a, R = R>,
@@ -32,9 +30,7 @@ where
     }
 }
 
-pub struct Repeat1<P> {
-    _marker: std::marker::PhantomData<P>,
-}
+pub struct Repeat1<P>(std::marker::PhantomData<P>);
 impl<'a, P, R> Parser<'a> for Repeat1<P>
 where
     P: Parser<'a, R = R>,
@@ -50,6 +46,17 @@ where
             remain = new_remain;
         }
         Some((items, remain))
+    }
+}
+
+pub struct Optional<P>(std::marker::PhantomData<P>);
+impl<'a, P: Parser<'a>> Parser<'a> for Optional<P> {
+    type R = Option<P::R>;
+    fn parse(s: &str) -> Option<(Self::R, &str)> {
+        match P::parse(s) {
+            Some((r, rest)) => Some((Some(r), rest)),
+            None => Some((None, s)), // 失敗したら何も読まずに成功扱い
+        }
     }
 }
 

@@ -50,8 +50,8 @@ where
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::parser::Item;
-    use crate::token::TokenIsThat;
+    use crate::parser::*;
+    use crate::token::*;
 
     #[test]
     fn test_map_to_string() {
@@ -64,7 +64,7 @@ mod test {
     }
 
     fn test_map_to_string_vec() {
-        type Parser = Map<crate::parser::Repeat1<Item>, ToString>;
+        type Parser = Map<Repeat1<Item>, ToString>;
         let input = "abc123";
 
         let result = Parser::parse(input);
