@@ -18,7 +18,7 @@ mod test {
     fn test_char_that_mismatch() {
         let input = "xbc";
 
-        let result = <CharThat<'a'> as Parser<&str>>::parse(input);
+        let result = <CharThat<'a'>>::parse(input);
 
         assert_eq!(result, None);
     }

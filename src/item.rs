@@ -1,6 +1,4 @@
-use crate::combinator::filter::Filter;
 use crate::parser::Parser;
-use crate::predict::IsThat;
 use crate::stream::Stream;
 
 /// 入力の要素を1つ読む
