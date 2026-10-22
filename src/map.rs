@@ -5,18 +5,18 @@ pub trait FromParserResult<R> {
     fn convert(r: R) -> Self::Output;
 }
 
-pub struct Map<P, T> {
-    _marker: std::marker::PhantomData<(P, T)>,
+pub struct Map<P, F> {
+    _marker: std::marker::PhantomData<(P, F)>,
 }
-impl<'a, P, T, R> Parser<'a> for Map<P, T>
+impl<'a, T: 'a, P, F, R> Parser<'a, T> for Map<P, F>
 where
-    P: Parser<'a, R = R>,
-    T: FromParserResult<R>,
+    P: Parser<'a, T, R = R>,
+    F: FromParserResult<R>,
 {
-    type R = T::Output;
-    fn parse(s: &str) -> Option<(Self::R, &str)> {
-        let (item, remain) = P::parse(s)?;
-        Some((T::convert(item), remain))
+    type R = F::Output;
+    fn parse(input: &'a [T]) -> Option<(Self::R, &'a [T])> {
+        let (item, remain) = P::parse(input)?;
+        Some((F::convert(item), remain))
     }
 }
 
@@ -50,38 +50,45 @@ where
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::filter::Filter;
     use crate::parser::*;
+    use crate::predict::{IsDigit, Not};
     use crate::token::*;
+
+    fn chars(s: &str) -> Vec<char> {
+        s.chars().collect()
+    }
 
     #[test]
     fn test_map_to_string() {
         type Parser = Map<Item, ToString>;
-        let input = "a123";
+        let input = chars("a123");
 
-        let result = Parser::parse(input);
+        let result = Parser::parse(&input);
 
-        assert_eq!(result, Some(("a".to_string(), "123")));
+        assert_eq!(result, Some(("a".to_string(), chars("123").as_slice())));
     }
 
+    #[test]
     fn test_map_to_string_vec() {
-        type Parser = Map<Repeat1<Item>, ToString>;
-        let input = "abc123";
+        type Parser = Map<Repeat1<Filter<Item, Not<IsDigit>>>, ToString>;
+        let input = chars("abc123");
 
-        let result = Parser::parse(input);
+        let result = Parser::parse(&input);
 
-        assert_eq!(result, Some(("abc".to_string(), "123")));
+        assert_eq!(result, Some(("abc".to_string(), chars("123").as_slice())));
     }
 
     #[test]
     fn test_map_to_token() {
         type Parser = Map<Item, ToToken<'static, TokenIsThat<'a'>>>;
-        let input = "a123";
+        let input = chars("a123");
 
-        let result = Parser::parse(input);
+        let result = Parser::parse(&input);
 
         assert!(result.is_some());
         let (token, remain) = result.unwrap();
         assert_eq!(TokenIsThat::<'a'>::build('a'), token);
-        assert_eq!(remain, "123");
+        assert_eq!(remain, chars("123").as_slice());
     }
 }
