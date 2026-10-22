@@ -15,5 +15,5 @@ pub use combinator::{
     repeat::{Repeat0, Repeat1},
 };
 pub use convert::{FromParserResult, IntoString, ToToken};
-pub use item::Item;
+pub use item::{CharThat, Item};
 pub use parser::Parser;
