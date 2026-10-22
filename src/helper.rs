@@ -4,7 +4,7 @@ use crate::{Filter, Item};
 pub type CharThat<const C: char> = Filter<Item, IsThat<C>>;
 
 mod test {
-    use super::*
+    use super::*;
     use crate::*;
 
     #[test]
