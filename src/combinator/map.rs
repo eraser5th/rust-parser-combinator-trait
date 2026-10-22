@@ -48,7 +48,7 @@ mod test {
 
     #[test]
     fn test_map_to_token() {
-        type Parser = Map<Item, ToToken<'static, TokenIsThat<'a'>>>;
+        type Parser = Map<Item, ToToken<TokenIsThat<'a'>>>;
         let input = chars("a123");
 
         let result = Parser::parse(&input);

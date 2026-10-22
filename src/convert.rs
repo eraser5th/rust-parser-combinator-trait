@@ -19,12 +19,12 @@ impl FromParserResult<char> for IntoString {
     }
 }
 
-pub struct ToToken<'a, T> {
-    _marker: std::marker::PhantomData<&'a T>,
+pub struct ToToken<T> {
+    _marker: std::marker::PhantomData<T>,
 }
-impl<'a, T, In> FromParserResult<In> for ToToken<'a, T>
+impl<T, In> FromParserResult<In> for ToToken<T>
 where
-    T: Token<'a, In>,
+    T: Token<In>,
 {
     type Output = T;
     fn convert(r: In) -> Self::Output {
