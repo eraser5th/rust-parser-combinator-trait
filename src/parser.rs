@@ -1,4 +1,6 @@
-pub trait Parser<'a, T: 'a> {
+use crate::stream::Stream;
+
+pub trait Parser<S: Stream> {
     type R;
-    fn parse(input: &'a [T]) -> Option<(Self::R, &'a [T])>;
+    fn parse(input: S) -> Option<(Self::R, S)>;
 }

@@ -1,5 +1,6 @@
 pub mod combinator;
 pub mod convert;
+pub mod helper;
 pub mod item;
 pub mod parser;
 pub mod predict;
@@ -16,5 +17,5 @@ pub use combinator::{
     repeat::{Repeat0, Repeat1},
 };
 pub use convert::{FromParserResult, IntoString, ToToken};
-pub use item::{CharThat, Item};
+pub use item::Item;
 pub use parser::Parser;

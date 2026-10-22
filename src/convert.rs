@@ -1,3 +1,5 @@
+use std::marker::PhantomData;
+
 use crate::token::Token;
 
 pub trait FromParserResult<R> {
@@ -19,8 +21,24 @@ impl FromParserResult<char> for IntoString {
     }
 }
 
+pub struct Into<T>(PhantomData<T>);
+impl<In, T: From<In>> FromParserResult<In> for Into<T> {
+    type Output = T;
+    fn convert(r: In) -> T {
+        T::from(r)
+    }
+}
+
+pub struct Const<T>(PhantomData<T>);
+impl<In, T: Default> FromParserResult<In> for Const<T> {
+    type Output = T;
+    fn convert(_: In) -> T {
+        T::default()
+    }
+}
+
 pub struct ToToken<T> {
-    _marker: std::marker::PhantomData<T>,
+    _marker: PhantomData<T>,
 }
 impl<T, In> FromParserResult<In> for ToToken<T>
 where
