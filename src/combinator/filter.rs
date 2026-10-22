@@ -1,6 +1,7 @@
 use crate::parser::Parser;
-use crate::predict::Predict;
+use crate::predict::{Not, Predict};
 use crate::stream::Stream;
+use crate::Item;
 
 pub struct Filter<I, P> {
     _marker: std::marker::PhantomData<(I, P)>,
@@ -19,6 +20,9 @@ where
         Pr::predict(item.clone()).then_some((item, rest))
     }
 }
+
+pub type ItemThat<P> = Filter<Item, P>;
+pub type ItemThatNot<P> = Filter<Item, Not<P>>;
 
 #[cfg(test)]
 mod test {
