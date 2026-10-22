@@ -3,6 +3,7 @@ pub mod convert;
 pub mod item;
 pub mod parser;
 pub mod predict;
+pub mod stream;
 pub mod token;
 
 #[cfg(test)]
