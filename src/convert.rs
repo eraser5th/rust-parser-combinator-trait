@@ -37,13 +37,6 @@ impl<In, T: Default> FromParserResult<In> for Const<T> {
     }
 }
 
-impl<In, T: Default> FromParserResult<In> for T {
-    type Output = T;
-    fn convert(_: In) -> T {
-        T::default()
-    }
-}
-
 pub struct ToToken<T> {
     _marker: PhantomData<T>,
 }
