@@ -1,9 +1,5 @@
-use crate::{parser::Parser, token::Token};
-
-pub trait FromParserResult<R> {
-    type Output;
-    fn convert(r: R) -> Self::Output;
-}
+use crate::convert::FromParserResult;
+use crate::parser::Parser;
 
 pub struct Map<P, F> {
     _marker: std::marker::PhantomData<(P, F)>,
@@ -20,48 +16,19 @@ where
     }
 }
 
-pub struct ToString;
-impl FromParserResult<Vec<char>> for ToString {
-    type Output = String;
-    fn convert(r: Vec<char>) -> Self::Output {
-        r.into_iter().collect()
-    }
-}
-impl FromParserResult<char> for ToString {
-    type Output = String;
-    fn convert(r: char) -> Self::Output {
-        r.to_string()
-    }
-}
-
-pub struct ToToken<'a, T> {
-    _marker: std::marker::PhantomData<&'a T>,
-}
-impl<'a, T, In> FromParserResult<In> for ToToken<'a, T>
-where
-    T: Token<'a, In>,
-{
-    type Output = T;
-    fn convert(r: In) -> Self::Output {
-        T::build(r)
-    }
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::filter::Filter;
-    use crate::parser::*;
+    use crate::combinator::{filter::Filter, repeat::Repeat1};
+    use crate::convert::{IntoString, ToToken};
+    use crate::item::Item;
     use crate::predict::{IsDigit, Not};
+    use crate::test_util::chars;
     use crate::token::*;
-
-    fn chars(s: &str) -> Vec<char> {
-        s.chars().collect()
-    }
 
     #[test]
     fn test_map_to_string() {
-        type Parser = Map<Item, ToString>;
+        type Parser = Map<Item, IntoString>;
         let input = chars("a123");
 
         let result = Parser::parse(&input);
@@ -71,7 +38,7 @@ mod test {
 
     #[test]
     fn test_map_to_string_vec() {
-        type Parser = Map<Repeat1<Filter<Item, Not<IsDigit>>>, ToString>;
+        type Parser = Map<Repeat1<Filter<Item, Not<IsDigit>>>, IntoString>;
         let input = chars("abc123");
 
         let result = Parser::parse(&input);

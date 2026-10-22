@@ -22,16 +22,15 @@ where
 mod test {
     use super::*;
 
-    use crate::{parser::Item, predict::IsDigit};
+    use crate::{item::Item, predict::IsDigit, test_util::chars};
 
     #[test]
     fn test_parse_digit() {
         type Parser = Filter<Item, IsDigit>;
-        let input: Vec<char> = "1abc".chars().collect();
-        let rest: Vec<char> = "abc".chars().collect();
+        let input = chars("1abc");
 
         let result = Parser::parse(&input);
 
-        assert_eq!(result, Some(('1', rest.as_slice())));
+        assert_eq!(result, Some(('1', chars("abc").as_slice())));
     }
 }
